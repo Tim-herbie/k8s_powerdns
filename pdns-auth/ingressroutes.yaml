@@ -1,0 +1,15 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: powerdns-auth-api
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`pdns-auth.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: pdns-auth-api
+          port: 8081
+  tls: {}

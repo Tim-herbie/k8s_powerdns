@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdns-rec-udp
+spec:
+  selector:
+    app: pdns-recursor
+  ports:
+  - protocol: UDP
+    port: 53
+    targetPort: 53
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdns-rec-api
+spec:
+  selector:
+    app: pdns-recursor
+  ports:
+  - protocol: TCP
+    port: 8082

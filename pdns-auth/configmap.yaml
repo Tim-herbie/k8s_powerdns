@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pdns-auth-config
+data:
+  pdns.conf: |
+    launch=gpgsql
+    gpgsql-host=pdns-postgres-db
+    gpgsql-port=5432
+    gpgsql-dbname=dns
+    gpgsql-user=pdns
+    gpgsql-password={{POSTGRES_DB_SECRET}}
+
+    local-port=53
+    
+    webserver=yes
+    webserver-address=0.0.0.0
+    webserver-allow-from=0.0.0.0/0
+    webserver-port=8081
+    webserver-password=secret
+    
+    api=yes
+    api-key=secret

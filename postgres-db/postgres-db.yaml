@@ -1,0 +1,26 @@
+apiVersion: acid.zalan.do/v1
+kind: postgresql
+metadata:
+  name: pdns-postgres-db
+spec:
+  teamId: pdns
+  postgresql:
+    version: "14"
+    parameters:
+      max_connections: "200"
+  numberOfInstances: 1
+  volume:
+    size: "1Gi"
+  users:
+    pdns:
+      - superuser
+      - createdb
+  databases:
+    dns: pdns
+  resources:
+    requests:
+      cpu: 10m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 200Mi
