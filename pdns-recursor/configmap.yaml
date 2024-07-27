@@ -14,4 +14,4 @@ data:
     webserver-address=0.0.0.0
     system-resolver-ttl=60
     max-negative-ttl=1
-    forward-zones={{DOMAIN}}=pdns-auth-udp,.=8.8.8.8:53
+    forward-zones-recurse={{DOMAIN}}=pdns-auth-udp,.=8.8.8.8:53
