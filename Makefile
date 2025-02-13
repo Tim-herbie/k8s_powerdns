@@ -106,6 +106,7 @@ pdns-recursor-install:
 	| sed 's|{{PDNS_RECURSOR_LOGLEVEL}}|$(PDNS_RECURSOR_LOGLEVEL)|g')" | \
 	kubectl -n $(PDNS_NAMESPACE) apply -f -
 	
+	kubectl -n $(PDNS_NAMESPACE) apply -f ./pdns-recursor/secret.yaml
 	kubectl -n $(PDNS_NAMESPACE) apply -f ./pdns-recursor/deployment.yaml
 	kubectl -n $(PDNS_NAMESPACE) apply -f ./pdns-recursor/services.yaml
 	printf '%s' "$$(cat ./pdns-recursor/ingressroutes.yaml | sed 's|{{DOMAIN}}|$(DOMAIN)|g')" | kubectl -n $(PDNS_NAMESPACE) apply -f -
