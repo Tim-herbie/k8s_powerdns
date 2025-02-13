@@ -4,14 +4,26 @@ metadata:
   name: pdns-rec-config
 data:
   pdns.conf: |
+    # PowerDNS Recursor configuration file
     allow-from=0.0.0.0/0
     local-port=53
     webserver=yes
     webserver-allow-from=0.0.0.0/0
     webserver-port=8082
+    webserver-address=0.0.0.0
+
+    # Secrets
     webserver-password=secret
     api-key=secret
-    webserver-address=0.0.0.0
+    
+    # Recursor
     system-resolver-ttl=60
     max-negative-ttl=1
-    forward-zones-recurse={{DOMAIN}}=pdns-auth-udp,.=8.8.8.8:53
+    
+    # Logging
+    quiet={{PDNS_RECURSOR_QUIET}}
+    disable-syslog=yes
+    loglevel={{PDNS_RECURSOR_LOGLEVEL}}
+
+    # Forward zones
+    forward-zones-recurse={{DOMAIN}}=pdns-auth-udp,.={{PUBLIC_RESOLVER}}:53
