@@ -11,10 +11,6 @@ data:
     webserver-allow-from=0.0.0.0/0
     webserver-port=8082
     webserver-address=0.0.0.0
-
-    # Secrets
-    webserver-password=secret
-    api-key=secret
     
     # Recursor
     system-resolver-ttl=60
