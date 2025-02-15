@@ -81,16 +81,23 @@ postgres-db-init:
 	kubectl -n $(PDNS_NAMESPACE) apply -f ./postgres-db/postgres-init.yaml
 
 wait_for_db_init:
-	@while true; do \
-        status=$$(kubectl -n $(PDNS_NAMESPACE) get pods -l job-name=postgres-init-job -o json | jq -r '.items[].status.phase'); \
-        if [ "$$status" = "Succeeded" ]; then \
-            echo "Database is ready.."; \
-            break; \
-        else \
-            echo "Database is not initialized. Waiting..."; \
-            sleep 10; \
-        fi; \
-    done
+	@pod_status=$$(kubectl -n $(PDNS_NAMESPACE) get pods -l app=pdns-auth -o jsonpath='{.items[0].status.phase}' 2>/dev/null); \
+    if [ "$$pod_status" = "Running" ]; then \
+        echo "pdns-auth pod is already running and database already initialized."; \
+    else \
+        echo "pdns-auth pod not found or not running, checking postgres-init-job..."; \
+        while true; do \
+            status=$$(kubectl -n $(PDNS_NAMESPACE) get pods -l job-name=postgres-init-job -o json | jq -r '.items[].status.phase'); \
+            if [ "$$status" = "Succeeded" ]; then \
+                echo "Database is ready.."; \
+                break; \
+            else \
+                echo "Database is not initialized. Waiting..."; \
+                sleep 10; \
+            fi; \
+        done \
+    fi
+
 
 pdns-auth-install:
 	printf '%s' "$$(cat ./pdns-auth/secret.yaml | sed 's|{{POSTGRES_DB_SECRET}}|$(POSTGRES_DB_SECRET)|g')" | kubectl -n $(PDNS_NAMESPACE) apply -f -
