@@ -14,21 +14,63 @@ spec:
       labels:
         app: pdns-auth
     spec:
+      initContainers:
+      - name: init-secrets
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          # Create necessary directories
+          mkdir -p /etc/powerdns/pdns.d
+          
+          # Copy the config file from ConfigMap
+          cp /etc/pdns-config/pdns.conf /etc/powerdns/pdns.conf
+          cp /etc/pdns-config-general/pdns-general.conf /etc/powerdns/pdns.d/pdns-general.conf
+
+          # Generate the secrets.conf file
+          echo "api-key=$(cat /etc/pdns/secrets/api-key)" > /etc/powerdns/pdns.d/secrets.conf
+          echo "webserver-password=$(cat /etc/pdns/secrets/webserver-password)" >> /etc/powerdns/pdns.d/secrets.conf
+          echo "gpgsql-password=$(cat /etc/pdns/secrets/gpgsql-password)" >> /etc/powerdns/pdns.d/secrets.conf
+          echo "Secrets and config initialized successfully."
+
+          # Set proper ownership and permissions
+          chown -R 953:953 /etc/powerdns  # Adjust to match the PowerDNS user UID/GID
+          chmod -R 755 /etc/powerdns      # Allow read/execute for others, but only owner can write
+        volumeMounts:
+        - name: pdns-auth-secrets-volume
+          mountPath: /etc/pdns/secrets
+          readOnly: true
+        - name: pdns-auth-config-volume
+          mountPath: /etc/pdns-config
+          readOnly: true
+        - name: pdns-auth-config-volume-general
+          mountPath: /etc/pdns-config-general
+          readOnly: true
+        - name: pdns-auth-shared
+          mountPath: /etc/powerdns
       containers:
       - name: pdns-auth
         image: powerdns/pdns-auth-49:4.9.0
         ports:
-        # - containerPort: 53
-        #   protocol: TCP
+        - containerPort: 53
+          protocol: TCP
         - containerPort: 53
           protocol: UDP
         - containerPort: 8081
           protocol: TCP
         volumeMounts:
-        - name: pdns-auth-config-volume
-          mountPath: /etc/powerdns/pdns.conf
-          subPath: pdns.conf
+        - name: pdns-auth-shared
+          mountPath: /etc/powerdns
       volumes:
+      - name: pdns-auth-shared
+        emptyDir: {}
+      - name: pdns-auth-secrets-volume
+        secret:
+          secretName: pdns-auth-secrets
       - name: pdns-auth-config-volume
         configMap:
           name: pdns-auth-config
+      - name: pdns-auth-config-volume-general
+        configMap:
+          name: pdns-auth-config-general

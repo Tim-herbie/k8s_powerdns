@@ -9,7 +9,7 @@ PostgreSQL_OPERATOR_VERSION := 1.10.1
 POSTGRES_OPERATOR_CHECK = $(shell kubectl get pods -A -l app.kubernetes.io/name=postgres-operator)
 
 # PowerDNS Variables 
-POSTGRES_DB_SECRET = $(shell kubectl get secret pdns.pdns-postgres-db.credentials.postgresql.acid.zalan.do -n $(PDNS_NAMESPACE) -o json | jq '.data | map_values(@base64d)' | jq -r '.password')
+POSTGRES_DB_SECRET = $(shell kubectl get secret pdns.pdns-postgres-db.credentials.postgresql.acid.zalan.do -n $(PDNS_NAMESPACE) -o json | jq -r '.data.password')
 DOMAIN := example.com
 PUBLIC_RESOLVER := 8.8.8.8
 ENABLE_RECURSOR_DEBUG_LOGS := yes
@@ -93,7 +93,8 @@ wait_for_db_init:
     done
 
 pdns-auth-install:
-	printf '%s' "$$(cat ./pdns-auth/configmap.yaml | sed 's|{{POSTGRES_DB_SECRET}}|$(POSTGRES_DB_SECRET)|g')" | kubectl -n $(PDNS_NAMESPACE) apply -f -
+	printf '%s' "$$(cat ./pdns-auth/secret.yaml | sed 's|{{POSTGRES_DB_SECRET}}|$(POSTGRES_DB_SECRET)|g')" | kubectl -n $(PDNS_NAMESPACE) apply -f -
+	kubectl -n $(PDNS_NAMESPACE) apply -f ./pdns-auth/configmap.yaml
 	kubectl -n $(PDNS_NAMESPACE) apply -f ./pdns-auth/deployment.yaml
 	kubectl -n $(PDNS_NAMESPACE) apply -f ./pdns-auth/services.yaml
 	printf '%s' "$$(cat ./pdns-auth/ingressroutes.yaml | sed 's|{{DOMAIN}}|$(DOMAIN)|g')" | kubectl -n $(PDNS_NAMESPACE) apply -f -
