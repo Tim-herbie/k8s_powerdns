@@ -51,7 +51,7 @@ spec:
           mountPath: /etc/powerdns
       containers:
       - name: pdns-auth
-        image: powerdns/pdns-auth-49:4.9.0
+        image: powerdns/pdns-auth-49:4.9.4
         ports:
         - containerPort: 53
           protocol: TCP
