@@ -22,11 +22,12 @@ spec:
         - -c
         - |
           # Copy the config file from configMap
-          cp /etc/pdns-config/pdns.conf /etc/powerdns/recursor.d/pdns.conf
+          cp /etc/pdns-config/recursor.yml /etc/powerdns/recursor.d/recursor.yml
 
-          # Generate the secrets.conf file
-          echo "api-key=$(cat /etc/pdns/secrets/api-key)" > /etc/powerdns/recursor.d/secrets.conf
-          echo "webserver-password=$(cat /etc/pdns/secrets/webserver-password)" >> /etc/powerdns/recursor.d/secrets.conf
+          # Generate the secrets.yml file
+          echo "webservice:" > /etc/powerdns/recursor.d/secrets.yml
+          echo "  api_key: $(cat /etc/pdns/secrets/api-key)" >> /etc/powerdns/recursor.d/secrets.yml
+          echo "  password: $(cat /etc/pdns/secrets/webserver-password)" >> /etc/powerdns/recursor.d/secrets.yml
           echo "Secrets and config initialized successfully."
         volumeMounts:
         - name: pdns-rec-secrets-volume
@@ -39,7 +40,7 @@ spec:
           mountPath: /etc/powerdns/recursor.d
       containers:
       - name: pdns-recursor
-        image: powerdns/pdns-recursor-51:5.1.0-alpha1
+        image: powerdns/pdns-recursor-51:5.1.3
         ports:
         - containerPort: 53
           protocol: TCP

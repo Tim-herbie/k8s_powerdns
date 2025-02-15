@@ -12,7 +12,7 @@ POSTGRES_OPERATOR_CHECK = $(shell kubectl get pods -A -l app.kubernetes.io/name=
 POSTGRES_DB_SECRET = $(shell kubectl get secret pdns.pdns-postgres-db.credentials.postgresql.acid.zalan.do -n $(PDNS_NAMESPACE) -o json | jq -r '.data.password')
 DOMAIN := example.com
 PUBLIC_RESOLVER := 8.8.8.8
-ENABLE_RECURSOR_DEBUG_LOGS := yes
+ENABLE_RECURSOR_DEBUG_LOGS := false
 PDNS_NAMESPACE := pdns
 
 .PHONY: install-postgresql-operator
@@ -22,11 +22,11 @@ PDNS_NAMESPACE := pdns
 ###########################
 all: prep install-postgresql-operator wait_for_postgres_operator postgres-db-install wait_for_postgresql postgres-db-init wait_for_db_init pdns-auth-install pdns-recursor-install
 
-ifeq ($(strip $(ENABLE_RECURSOR_DEBUG_LOGS)),yes)
-  PDNS_RECURSOR_QUIET := no
+ifeq ($(strip $(ENABLE_RECURSOR_DEBUG_LOGS)),true)
+  PDNS_RECURSOR_QUIET := false
   PDNS_RECURSOR_LOGLEVEL := 7
 else
-  PDNS_RECURSOR_QUIET := yes
+  PDNS_RECURSOR_QUIET := true
   PDNS_RECURSOR_LOGLEVEL := 6
 endif
 
