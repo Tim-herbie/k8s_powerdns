@@ -5,7 +5,7 @@ metadata:
   labels:
     app: pdns-recursor
 spec:
-  replicas: 1
+  replicas: {{PDNS_RECURSOR_REPLICAS}}
   selector:
     matchLabels:
       app: pdns-recursor

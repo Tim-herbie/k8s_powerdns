@@ -8,12 +8,16 @@ PostgreSQL_OPERATOR_NAMESPACE := postgres
 PostgreSQL_OPERATOR_VERSION := 1.10.1
 POSTGRES_OPERATOR_CHECK = $(shell kubectl get pods -A -l app.kubernetes.io/name=postgres-operator)
 
+# PostgreSQL Database Variables
+PSQL_DB_REPLICAS := 1
+
 # PowerDNS Variables 
 POSTGRES_DB_SECRET = $(shell kubectl get secret pdns.pdns-postgres-db.credentials.postgresql.acid.zalan.do -n $(PDNS_NAMESPACE) -o json | jq -r '.data.password')
 DOMAIN := example.com
 PUBLIC_RESOLVER := 8.8.8.8
 ENABLE_RECURSOR_DEBUG_LOGS := false
 PDNS_NAMESPACE := pdns
+PDNS_RECURSOR_REPLICAS := 1
 
 .PHONY: install-postgresql-operator
 
@@ -63,7 +67,7 @@ wait_for_postgres_operator:
     done
 
 postgres-db-install:
-	kubectl -n $(PDNS_NAMESPACE) apply -f ./postgres-db/postgres-db.yaml
+	printf '%s' "$$(cat ./postgres-db/postgres-db.yaml | sed 's|{{PSQL_DB_REPLICAS}}|$(PSQL_DB_REPLICAS)|g')" | kubectl -n $(PDNS_NAMESPACE) apply -f -
 
 wait_for_postgresql:
 	@while true; do \
@@ -115,7 +119,7 @@ pdns-recursor-install:
 	kubectl -n $(PDNS_NAMESPACE) apply -f -
 	
 	kubectl -n $(PDNS_NAMESPACE) apply -f ./pdns-recursor/secret.yaml
-	kubectl -n $(PDNS_NAMESPACE) apply -f ./pdns-recursor/deployment.yaml
+	printf '%s' "$$(cat ./pdns-recursor/deployment.yaml | sed 's|{{PDNS_RECURSOR_REPLICAS}}|$(PDNS_RECURSOR_REPLICAS)|g')" | kubectl -n $(PDNS_NAMESPACE) apply -f -
 	kubectl -n $(PDNS_NAMESPACE) apply -f ./pdns-recursor/services.yaml
 	printf '%s' "$$(cat ./pdns-recursor/ingressroutes.yaml | sed 's|{{DOMAIN}}|$(DOMAIN)|g')" | kubectl -n $(PDNS_NAMESPACE) apply -f -
 

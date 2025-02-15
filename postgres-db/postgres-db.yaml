@@ -8,7 +8,7 @@ spec:
     version: "16"
     parameters:
       max_connections: "200"
-  numberOfInstances: 1
+  numberOfInstances: {{PSQL_DB_REPLICAS}}
   volume:
     size: "1Gi"
   users:
