@@ -3,23 +3,36 @@ kind: ConfigMap
 metadata:
   name: pdns-rec-config
 data:
-  pdns.conf: |
+  recursor.yml: |
     # PowerDNS Recursor configuration file
-    allow-from=0.0.0.0/0
-    local-port=53
-    webserver=yes
-    webserver-allow-from=0.0.0.0/0
-    webserver-port=8082
-    webserver-address=0.0.0.0
-    
-    # Recursor
-    system-resolver-ttl=60
-    max-negative-ttl=1
-    
-    # Logging
-    quiet={{PDNS_RECURSOR_QUIET}}
-    disable-syslog=yes
-    loglevel={{PDNS_RECURSOR_LOGLEVEL}}
+    incoming:
+      allow_from:
+      - 0.0.0.0/0
+      port: 53
 
-    # Forward zones
-    forward-zones-recurse={{DOMAIN}}=pdns-auth-udp,.={{PUBLIC_RESOLVER}}:53
+    logging:
+      disable_syslog: true
+      loglevel: {{PDNS_RECURSOR_LOGLEVEL}}
+      quiet: {{PDNS_RECURSOR_QUIET}}
+
+    recordcache:
+      max_negative_ttl: 1
+    
+    recursor:
+      forward_zones_recurse:
+      - zone: {{DOMAIN}}
+        recurse: true
+        forwarders:
+        - pdns-auth-udp
+      - zone: .
+        recurse: true
+        forwarders:
+        - {{PUBLIC_RESOLVER}}:53
+      system_resolver_ttl: 60
+    
+    webservice:
+      address: 0.0.0.0
+      allow_from:
+      - 0.0.0.0/0
+      port: 8082
+      webserver: true
