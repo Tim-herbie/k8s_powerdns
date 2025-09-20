@@ -19,7 +19,7 @@ spec:
     - web
     - websecure
   routes:
-    - match: Host(`pdns-rec.{{DOMAIN}}`)
+    - match: Host(`pdns-rec.example.com`)
       kind: Rule
       services:
         - name: pdns-rec-api

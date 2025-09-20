@@ -7,7 +7,7 @@ spec:
     - web
     - websecure
   routes:
-    - match: Host(`pdns-auth.{{DOMAIN}}`)
+    - match: Host(`pdns-auth.example.com`)
       kind: Rule
       services:
         - name: pdns-auth-api

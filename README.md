@@ -64,12 +64,12 @@
 
 
 
-This project provides a streamlined and efficient way to deploy a [PowerDNS](https://www.powerdns.com/) Authoritative and Recursor with an external Postgres Database within your Kubernetes environment.
+This project provides a streamlined and efficient way to deploy a [PowerDNS](https://www.powerdns.com/) Authoritative and Recursor within your Kubernetes environment.
 
 Components:
 * **[PowerDNS Authoritative Nameserver](https://doc.powerdns.com/authoritative/):** Handles DNS zone data.
 * **[PowerDNS Recursor Server](https://doc.powerdns.com/recursor/):** Resolves DNS queries. 
-* **HA Postgres Database:** Database of DNS zones and records (by [Postgres Zalando Operator](https://www.powerdns.com/))
+* **OUT OF SCOPE:** Database of DNS zones and records
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -86,27 +86,24 @@ The following requirements are necessary to install the project.
 - A running Kubernetes cluster
 - kubectl installed and configured
 - git installed and configured
-- jq installed
-- makefile installed
 
 ### Already installed within your Kubernetes Cluster
 - [Ingresscontroller Traefik](https://doc.traefik.io/traefik/providers/kubernetes-ingress/)
+- Postgres Database
 
 
 ### Installation
-
-_The deployment is handled by a Makefile._
 
 1. Clone the repo
     ```sh
    git clone https://github.com/Tim-herbie/k8s_powerdns.git
    ```
-2.  Before you can deploy it, you have at least to adjust the variable **DOMAIN** in the Makefile. 
+2.  Before you can deploy it, you have at least to adjust the **example.com DOMAIN** in the files. 
   
-3. Install the Makefile
-   ```sh
-   make all
-   ```
+3. Install the Powerdns-Authoritative
+
+4. Install the Powerdns-Recursor
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -123,7 +120,6 @@ Once the PowerDNS server is up and running, you can access the webserver with th
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 

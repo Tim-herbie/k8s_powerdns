@@ -12,22 +12,22 @@ data:
 
     logging:
       disable_syslog: true
-      loglevel: {{PDNS_RECURSOR_LOGLEVEL}}
-      quiet: {{PDNS_RECURSOR_QUIET}}
+      loglevel: 6
+      quiet: true
 
     recordcache:
       max_negative_ttl: 1
     
     recursor:
       forward_zones_recurse:
-      - zone: {{DOMAIN}}
+      - zone: example.com
         recurse: true
         forwarders:
         - pdns-auth-udp
       - zone: .
         recurse: true
         forwarders:
-        - {{PUBLIC_RESOLVER}}:53
+        - 8.8.8.8:53
       system_resolver_ttl: 60
     
     webservice:
